@@ -2,20 +2,25 @@
 //
 
 #include <iostream>
+#include <array>
 #include <omp.h>
 
 // Globales
-#define N 1000
-#define chunk 100
-#define mostrar 10
+constexpr int N = 1000;
+constexpr int CHUNK = 100;
+constexpr int SHOW_SIZE = 10000; // char instead?
 
-void imprimeArreglo(float* d);
+// Prevents out of bounds errors
+static_assert(CHUNK < N, "CHUNK's value must be smaller than N");
+static_assert(SHOW_SIZE < N, "SHOW_SIZE's value must be smaller than N");
+
+void imprimeArreglo(const std::array<float, N>&);
 
 int main() {
-    std::cout << "Sumando arreglos en paralelo!\n" << std::endl;
+    std::cout << "Sumando arreglos en paralelo!\n\n" << std::endl;
     
     // Declaración de variables
-    float a[N], b[N], c[N];
+    std::array<float, N> a, b, c;
     int i;
 
     // Inicialización de los arreglos
@@ -24,29 +29,27 @@ int main() {
         b[i] = (i + 3) * 3.7;
     }
 
-    int pedazos = chunk;
-
     // Definición de la estrategia de paralelización con OpenMP
-    #pragma omp parallel for shared(a, b, c, pedazos) private(i) schedule(static, pedazos)
+    #pragma omp parallel for shared(a, b, c, CHUNK) private(i) schedule(static, CHUNK)
     
     // Bucle paralelizado
     for (i = 0; i < N; i++)
         c[i] = a[i] + b[i];
 
     // Imprime en pantalla los arreglos a, b y c.
-    std::cout << "Imprimiendo lso primeros " << mostrar << " valores del arreglo a: " << std::endl;
+    std::cout << "Imprimiendo los primeros " << SHOW_SIZE << " valores del arreglo a: " << std::endl;
     imprimeArreglo(a);
-    std::cout << "Imprimiendo lso primeros " << mostrar << " valores del arreglo b: " << std::endl;
+    std::cout << "Imprimiendo los primeros " << SHOW_SIZE << " valores del arreglo b: " << std::endl;
     imprimeArreglo(b);
-    std::cout << "Imprimiendo lso primeros " << mostrar << " valores del arreglo c: " << std::endl;
+    std::cout << "Imprimiendo los primeros " << SHOW_SIZE << " valores del arreglo c: " << std::endl;
     imprimeArreglo(c);
     
     return 0;
 }
 
 // Imprime elementos del arreglo apuntado hasta el número definido en 'mostrar' 
-void imprimeArreglo(float* d) {
-    for (int x = 0; x < mostrar; x++)
+void imprimeArreglo(const std::array<float, N>& d) {
+    for (int x = 0; x < SHOW_SIZE; x++)
         std::cout << d[x] << " - ";
     std::cout << std::endl;
 }
