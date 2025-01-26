@@ -8,7 +8,7 @@
 // Globales
 constexpr int N = 1000;
 constexpr int CHUNK = 100;
-constexpr int SHOW_SIZE = 10000; // char instead?
+constexpr int SHOW_SIZE = 10; // char instead?
 
 // Prevents out of bounds errors
 static_assert(CHUNK < N, "CHUNK's value must be smaller than N");
